@@ -5,7 +5,7 @@ export type SequencerCallback = (step: number) => void;
 
 export class Sequencer {
   private engine: AudioEngine;
-  private bpm: number = 90;
+  private bpm: number = 122;
   private playing: boolean = false;
   private currentStep: number = -1;
   private nextStepTime: number = 0;

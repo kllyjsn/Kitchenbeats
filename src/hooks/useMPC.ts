@@ -60,7 +60,7 @@ export function useMPC() {
   const engineRef = useRef<AudioEngine | null>(null);
   const sequencerRef = useRef<Sequencer | null>(null);
 
-  const [bpm, setBpmState] = useState(90);
+  const [bpm, setBpmState] = useState(122);
   const [playing, setPlaying] = useState(false);
   const [recording, setRecording] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);

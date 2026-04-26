@@ -55,7 +55,41 @@ export interface MasterEffects {
 
 export type ViewMode = 'pads' | 'sequencer' | 'mixer' | 'effects';
 
-export type AppMode = 'studio' | 'keys' | 'dj';
+export type AppMode = 'studio' | 'keys' | 'dj' | 'compose';
+
+// ── Song / Composer Types ───────────────────────────────────────────────
+
+export interface SongTrackNote {
+  step: number;
+  note: number;
+  duration: number;
+  velocity: number;
+}
+
+export interface SongChordEvent {
+  step: number;
+  notes: number[];
+  duration: number;
+  velocity: number;
+}
+
+export interface SongSection {
+  name: string;
+  bars: number;
+  energy: number;
+  drumPattern: StepData[][];
+  bassNotes: SongTrackNote[];
+  chordNotes: SongChordEvent[];
+  leadNotes: SongTrackNote[];
+}
+
+export interface GeneratedSong {
+  title: string;
+  key: string;
+  scaleName: string;
+  bpm: number;
+  sections: SongSection[];
+}
 
 // ── Synth Types ─────────────────────────────────────────────────────────
 

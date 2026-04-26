@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMPC } from './hooks/useMPC';
 import { useSynth } from './hooks/useSynth';
 import { useDJ } from './hooks/useDJ';
+import { useComposer } from './hooks/useComposer';
 import { useKeyboard } from './hooks/useKeyboard';
 import { Display } from './components/Display';
 import { Transport } from './components/Transport';
@@ -13,8 +14,9 @@ import { PatternSelector } from './components/PatternSelector';
 import { Visualizer } from './components/Visualizer';
 import { SynthView } from './components/SynthView';
 import { DJView } from './components/DJView';
+import { ComposerView } from './components/ComposerView';
 import type { AppMode, ViewMode } from './types';
-import { Grid3X3, ListMusic, Sliders, Sparkles, Disc, Music, Drum } from 'lucide-react';
+import { Grid3X3, ListMusic, Sliders, Sparkles, Disc, Music, Drum, Wand2 } from 'lucide-react';
 import './index.css';
 
 const VIEW_TABS: { mode: ViewMode; label: string; icon: typeof Grid3X3 }[] = [
@@ -28,6 +30,7 @@ const APP_MODES: { mode: AppMode; label: string; icon: typeof Grid3X3 }[] = [
   { mode: 'studio', label: 'STUDIO', icon: Drum },
   { mode: 'keys', label: 'KEYS', icon: Music },
   { mode: 'dj', label: 'DJ', icon: Disc },
+  { mode: 'compose', label: 'COMPOSE', icon: Wand2 },
 ];
 
 function App() {
@@ -35,6 +38,7 @@ function App() {
   const mpc = useMPC();
   const synth = useSynth({ active: appMode === 'keys' });
   const dj = useDJ();
+  const composer = useComposer();
 
   useKeyboard({
     onTriggerPad: appMode === 'studio' ? mpc.triggerPad : undefined,
@@ -91,6 +95,9 @@ function App() {
             )}
             {appMode === 'dj' && (
               <span className="hidden sm:inline">Drop audio files to load</span>
+            )}
+            {appMode === 'compose' && (
+              <span className="hidden sm:inline">AI-generated songs</span>
             )}
           </div>
         </div>
@@ -219,18 +226,23 @@ function App() {
 
         {/* ── DJ MODE ── */}
         {appMode === 'dj' && <DJView dj={dj} />}
+
+        {/* ── COMPOSE MODE ── */}
+        {appMode === 'compose' && <ComposerView composer={composer} />}
       </main>
 
       {/* Footer */}
       <footer className="border-t border-zinc-800/30 py-2">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-[10px] text-zinc-600">
-          <span>Kitchen Beats v2.0</span>
+          <span>Kitchen Beats v3.0</span>
           <div className="flex items-center gap-3">
             <span>Studio</span>
             <span>·</span>
             <span>Synth</span>
             <span>·</span>
             <span>DJ</span>
+            <span>·</span>
+            <span>Composer</span>
           </div>
           <span>Web Audio API</span>
         </div>

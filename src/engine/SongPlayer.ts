@@ -38,6 +38,8 @@ export class SongPlayer {
   private currentStepInSection = 0;
   private totalStepCount = 0;
   private callback: SongPlayerCallback | null = null;
+  private pendingTimeouts: number[] = [];
+  private noteGen = new Map<string, number>();
 
   private readonly LOOKAHEAD = 0.025;
   private readonly SCHEDULE_AHEAD = 0.1;
@@ -130,6 +132,7 @@ export class SongPlayer {
   stop(): void {
     this._playing = false;
     clearTimeout(this.timerId);
+    this.clearPendingTimeouts();
     this.currentSectionIdx = 0;
     this.currentStepInSection = 0;
     this.totalStepCount = 0;
@@ -145,6 +148,7 @@ export class SongPlayer {
   pause(): void {
     this._playing = false;
     clearTimeout(this.timerId);
+    this.clearPendingTimeouts();
     this.bassSynth.panic();
     this.chordSynth.panic();
     this.leadSynth.panic();
@@ -152,6 +156,12 @@ export class SongPlayer {
     this.vocalSynth.panic();
     this.stopRiser();
     this.emitUpdate();
+  }
+
+  private clearPendingTimeouts(): void {
+    for (const id of this.pendingTimeouts) clearTimeout(id);
+    this.pendingTimeouts = [];
+    this.noteGen.clear();
   }
 
   private get currentSection(): SongSection | null {
@@ -249,8 +259,13 @@ export class SongPlayer {
 
   private scheduleNote(synth: SynthEngine, note: number, velocity: number, durationSteps: number, time: number): void {
     const delay = Math.max(0, time - this.ctx.currentTime);
-    setTimeout(() => synth.noteOn(note, velocity), delay * 1000);
-    setTimeout(() => synth.noteOff(note), (delay + durationSteps * this.stepDuration) * 1000);
+    const key = `${synth === this.bassSynth ? 'b' : synth === this.chordSynth ? 'c' : synth === this.leadSynth ? 'l' : 'a'}-${note}`;
+    const gen = (this.noteGen.get(key) ?? 0) + 1;
+    this.noteGen.set(key, gen);
+    this.pendingTimeouts.push(
+      window.setTimeout(() => synth.noteOn(note, velocity), delay * 1000),
+      window.setTimeout(() => { if (this.noteGen.get(key) === gen) synth.noteOff(note); }, (delay + durationSteps * this.stepDuration) * 1000),
+    );
   }
 
   private scheduleVocal(
@@ -259,9 +274,16 @@ export class SongPlayer {
     time: number
   ): void {
     const delay = Math.max(0, time - this.ctx.currentTime);
-    setTimeout(() => this.vocalSynth.noteOn(note, velocity, vowel, style), delay * 1000);
+    const vKey = `v-${note}`;
+    const vGen = (this.noteGen.get(vKey) ?? 0) + 1;
+    this.noteGen.set(vKey, vGen);
+    this.pendingTimeouts.push(
+      window.setTimeout(() => this.vocalSynth.noteOn(note, velocity, vowel, style), delay * 1000),
+    );
     if (style === 'pad' || style === 'choir' || style === 'whisper') {
-      setTimeout(() => this.vocalSynth.noteOff(note), (delay + durationSteps * this.stepDuration) * 1000);
+      this.pendingTimeouts.push(
+        window.setTimeout(() => { if (this.noteGen.get(vKey) === vGen) this.vocalSynth.noteOff(note); }, (delay + durationSteps * this.stepDuration) * 1000),
+      );
     }
   }
 
@@ -288,7 +310,7 @@ export class SongPlayer {
     filter.connect(this.riserGain);
     this.riserOsc.start();
 
-    setTimeout(() => this.stopRiser(), duration * 1000);
+    this.pendingTimeouts.push(window.setTimeout(() => this.stopRiser(), duration * 1000));
   }
 
   private stopRiser(): void {

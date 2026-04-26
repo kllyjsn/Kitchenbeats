@@ -62,26 +62,16 @@ export function useDJ(): DJState {
   const syncState = useCallback((d: 'A' | 'B') => {
     const deck = d === 'A' ? deckARef.current : deckBRef.current;
     if (!deck) return;
-    const state: DeckState = {
+    (d === 'A' ? setDeckAState : setDeckBState)(prev => ({
+      ...prev,
       loaded: deck.loaded,
       fileName: deck.fileName,
       playing: deck.playing,
       bpm: deck.detectedBPM,
       position: deck.position,
       duration: deck.duration,
-      volume: 1,
-      speed: 1,
-      eqLow: 0,
-      eqMid: 0,
-      eqHigh: 0,
-      filterFreq: 20000,
-      looping: false,
-      loopStart: 0,
-      loopEnd: 0,
-      hotCues: [null, null, null, null],
       waveformData: deck.waveformData,
-    };
-    (d === 'A' ? setDeckAState : setDeckBState)(state);
+    }));
   }, []);
 
   // Animation loop for position updates

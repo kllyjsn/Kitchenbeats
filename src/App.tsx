@@ -33,7 +33,7 @@ const APP_MODES: { mode: AppMode; label: string; icon: typeof Grid3X3 }[] = [
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('studio');
   const mpc = useMPC();
-  const synth = useSynth();
+  const synth = useSynth({ active: appMode === 'keys' });
   const dj = useDJ();
 
   useKeyboard({

@@ -218,6 +218,10 @@ export class DJDeck {
   }
 
   setSpeed(s: number): void {
+    if (this._playing) {
+      this.pauseOffset = this.position;
+      this.startedAt = this.ctx.currentTime;
+    }
     this._speed = Math.max(0.5, Math.min(2.0, s));
     if (this.source) {
       this.source.playbackRate.setValueAtTime(this._speed, this.ctx.currentTime);

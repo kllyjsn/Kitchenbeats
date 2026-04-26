@@ -21,12 +21,16 @@ export interface SynthState {
   getEngine: () => SynthEngine | null;
 }
 
+interface UseSynthOptions {
+  active?: boolean;
+}
+
 const SYNTH_KEY_MAP: Record<string, number> = {
   'z': 0, 's': 1, 'x': 2, 'd': 3, 'c': 4, 'v': 5, 'g': 6,
   'b': 7, 'h': 8, 'n': 9, 'j': 10, 'm': 11, ',': 12,
 };
 
-export function useSynth(): SynthState {
+export function useSynth({ active = true }: UseSynthOptions = {}): SynthState {
   const engineRef = useRef<SynthEngine | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
 
@@ -83,8 +87,10 @@ export function useSynth(): SynthState {
 
   const getEngine = useCallback(() => engineRef.current, []);
 
-  // Keyboard handler for synth keys
+  // Keyboard handler for synth keys — only active in keys mode
   useEffect(() => {
+    if (!active) return;
+
     const pressed = new Set<string>();
 
     const handleDown = (e: KeyboardEvent) => {
@@ -114,7 +120,7 @@ export function useSynth(): SynthState {
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };
-  }, [octave, noteOn, noteOff]);
+  }, [active, octave, noteOn, noteOff]);
 
   useEffect(() => {
     return () => {

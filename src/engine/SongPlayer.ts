@@ -196,6 +196,7 @@ export class SongPlayer {
       this.playStep(this.nextStepTime);
       this.nextStepTime += this.stepDuration;
       this.advance();
+      if (!this._playing) break;
     }
 
     this.timerId = window.setTimeout(() => this.schedule(), this.LOOKAHEAD * 1000);

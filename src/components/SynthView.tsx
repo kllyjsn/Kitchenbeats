@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import type { SynthState } from '../hooks/useSynth';
 import { SYNTH_PRESETS, noteName } from '../types';
 import { Knob } from './Knob';
@@ -264,7 +265,7 @@ function PianoRollGrid({ synth }: Props) {
           const note = baseNote + noteRange - 1 - row;
           const isBlack = [1, 3, 6, 8, 10].includes(note % 12);
           return (
-            <>
+            <Fragment key={`row-${row}`}>
               <div
                 key={`label-${row}`}
                 className={`text-[8px] font-mono flex items-center justify-end pr-1 border-b border-zinc-800/30
@@ -291,7 +292,7 @@ function PianoRollGrid({ synth }: Props) {
                   />
                 );
               })}
-            </>
+            </Fragment>
           );
         })}
       </div>

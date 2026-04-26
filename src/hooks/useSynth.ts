@@ -117,6 +117,13 @@ export function useSynth({ active = true }: UseSynthOptions = {}): SynthState {
     window.addEventListener('keydown', handleDown);
     window.addEventListener('keyup', handleUp);
     return () => {
+      for (const key of pressed) {
+        const off = SYNTH_KEY_MAP[key];
+        if (off !== undefined) {
+          const midiNote = (octave + 1) * 12 + off;
+          noteOff(midiNote);
+        }
+      }
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };

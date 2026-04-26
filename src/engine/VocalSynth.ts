@@ -31,6 +31,7 @@ interface VocalVoice {
   vca: GainNode;
   output: GainNode;
   note: number;
+  lfo?: OscillatorNode;
 }
 
 export class VocalSynth {
@@ -57,13 +58,13 @@ export class VocalSynth {
   setVowel(v: VowelType): void { this.currentVowel = v; }
   setStyle(s: VocalStyle): void { this.currentStyle = s; }
 
-  noteOn(note: number, velocity: number = 0.7, vowel?: VowelType): void {
+  noteOn(note: number, velocity: number = 0.7, vowel?: VowelType, styleOverride?: VocalStyle): void {
     if (this.voices.has(note)) this.noteOff(note);
 
     const v = vowel ?? this.currentVowel;
     const freq = 440 * Math.pow(2, (note - 69) / 12);
     const formantFreqs = FORMANTS[v];
-    const style = this.currentStyle;
+    const style = styleOverride ?? this.currentStyle;
 
     const output = this.ctx.createGain();
     output.gain.setValueAtTime(0, this.ctx.currentTime);
@@ -75,8 +76,9 @@ export class VocalSynth {
     source.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
     // Slight vibrato for realism
+    let lfo: OscillatorNode | undefined;
     if (style === 'choir' || style === 'pad') {
-      const lfo = this.ctx.createOscillator();
+      lfo = this.ctx.createOscillator();
       const lfoGain = this.ctx.createGain();
       lfo.frequency.setValueAtTime(5 + Math.random() * 1.5, this.ctx.currentTime);
       lfoGain.gain.setValueAtTime(freq * 0.006, this.ctx.currentTime);
@@ -143,7 +145,7 @@ export class VocalSynth {
       setTimeout(() => this.noteOff(note), dur * 1000);
     }
 
-    this.voices.set(note, { source, noiseSource, noiseGain, formants, vca, output, note });
+    this.voices.set(note, { source, noiseSource, noiseGain, formants, vca, output, note, lfo });
   }
 
   noteOff(note: number): void {
@@ -158,6 +160,7 @@ export class VocalSynth {
     setTimeout(() => {
       try { voice.source.stop(); } catch { /* */ }
       try { voice.noiseSource.stop(); } catch { /* */ }
+      if (voice.lfo) { try { voice.lfo.stop(); } catch { /* */ } voice.lfo.disconnect(); }
       voice.source.disconnect();
       voice.noiseSource.disconnect();
       voice.formants.forEach(f => f.disconnect());

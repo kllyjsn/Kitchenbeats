@@ -41,6 +41,10 @@ export function useDJ(): DJState {
       ctxRef.current = new AudioContext();
       crossGainA.current = ctxRef.current.createGain();
       crossGainB.current = ctxRef.current.createGain();
+      const initA = Math.cos(0.5 * Math.PI / 2);
+      const initB = Math.sin(0.5 * Math.PI / 2);
+      crossGainA.current.gain.setValueAtTime(initA, ctxRef.current.currentTime);
+      crossGainB.current.gain.setValueAtTime(initB, ctxRef.current.currentTime);
       crossGainA.current.connect(ctxRef.current.destination);
       crossGainB.current.connect(ctxRef.current.destination);
     }

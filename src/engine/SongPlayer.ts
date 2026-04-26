@@ -259,8 +259,7 @@ export class SongPlayer {
     time: number
   ): void {
     const delay = Math.max(0, time - this.ctx.currentTime);
-    this.vocalSynth.setStyle(style);
-    setTimeout(() => this.vocalSynth.noteOn(note, velocity, vowel), delay * 1000);
+    setTimeout(() => this.vocalSynth.noteOn(note, velocity, vowel, style), delay * 1000);
     if (style === 'pad' || style === 'choir' || style === 'whisper') {
       setTimeout(() => this.vocalSynth.noteOff(note), (delay + durationSteps * this.stepDuration) * 1000);
     }

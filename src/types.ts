@@ -73,6 +73,19 @@ export interface SongChordEvent {
   velocity: number;
 }
 
+export interface VocalEvent {
+  step: number;
+  note: number;
+  vowel: 'a' | 'e' | 'i' | 'o' | 'u';
+  style: 'chop' | 'stab' | 'pad' | 'choir' | 'whisper';
+  duration: number;
+  velocity: number;
+}
+
+export type ComposerGenre =
+  | 'deep_house' | 'tech_house' | 'uk_garage' | 'acid_techno'
+  | 'lo_fi_hip_hop' | 'ambient' | 'classic_house' | 'minimal_techno';
+
 export interface SongSection {
   name: string;
   bars: number;
@@ -81,6 +94,9 @@ export interface SongSection {
   bassNotes: SongTrackNote[];
   chordNotes: SongChordEvent[];
   leadNotes: SongTrackNote[];
+  arpNotes: SongTrackNote[];
+  vocalEvents: VocalEvent[];
+  fxRiser: boolean;
 }
 
 export interface GeneratedSong {
@@ -88,6 +104,7 @@ export interface GeneratedSong {
   key: string;
   scaleName: string;
   bpm: number;
+  genre: ComposerGenre;
   sections: SongSection[];
 }
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { GeneratedSong } from '../types';
+import type { GeneratedSong, ComposerGenre } from '../types';
 import { composeSong } from '../engine/Composer';
 import { SongPlayer } from '../engine/SongPlayer';
 
@@ -12,6 +12,8 @@ export interface ComposerState {
   totalSteps: number;
   sectionName: string;
   generating: boolean;
+  selectedGenre: ComposerGenre | null;
+  setSelectedGenre: (g: ComposerGenre | null) => void;
   generate: () => void;
   play: () => void;
   pause: () => void;
@@ -30,6 +32,7 @@ export function useComposer(): ComposerState {
   const [totalSteps, setTotalSteps] = useState(0);
   const [sectionName, setSectionName] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState<ComposerGenre | null>(null);
 
   const ensurePlayer = useCallback(() => {
     if (!ctxRef.current) {
@@ -56,9 +59,8 @@ export function useComposer(): ComposerState {
     const player = ensurePlayer();
     player.stop();
 
-    // Use setTimeout to allow UI to show "generating" state
     setTimeout(() => {
-      const newSong = composeSong();
+      const newSong = composeSong(selectedGenre ?? undefined);
       setSong(newSong);
       player.setSong(newSong);
       setTotalSteps(player.getTotalSteps());
@@ -69,7 +71,7 @@ export function useComposer(): ComposerState {
       setPlaying(false);
       setGenerating(false);
     }, 50);
-  }, [ensurePlayer]);
+  }, [ensurePlayer, selectedGenre]);
 
   const play = useCallback(() => {
     const player = ensurePlayer();
@@ -101,6 +103,7 @@ export function useComposer(): ComposerState {
   return {
     song, playing, sectionIndex, sectionStep,
     totalStep, totalSteps, sectionName, generating,
+    selectedGenre, setSelectedGenre,
     generate, play, pause, stop,
   };
 }

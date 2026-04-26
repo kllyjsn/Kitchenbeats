@@ -87,7 +87,7 @@ export function Transport({
         <input
           type="number"
           value={bpm}
-          onChange={e => onBpmChange(Math.max(30, Math.min(300, parseInt(e.target.value) || 90)))}
+          onChange={e => onBpmChange(Math.max(30, Math.min(300, parseInt(e.target.value) || 122)))}
           className="w-12 bg-transparent text-center text-white font-mono text-lg font-bold outline-none tabular-nums
                      [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />

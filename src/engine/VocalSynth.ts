@@ -94,6 +94,7 @@ export class VocalSynth {
     const noiseGain = this.ctx.createGain();
     const breathAmount = style === 'whisper' ? 0.3 : style === 'choir' ? 0.04 : 0.08;
     noiseGain.gain.setValueAtTime(breathAmount * velocity, this.ctx.currentTime);
+    noiseSource.connect(noiseGain);
 
     // Parallel formant filters
     const mergeNode = this.ctx.createGain();
@@ -106,7 +107,7 @@ export class VocalSynth {
       filter.Q.setValueAtTime(FORMANT_Q[i], this.ctx.currentTime);
 
       source.connect(filter);
-      noiseSource.connect(filter);
+      noiseGain.connect(filter);
       filter.connect(mergeNode);
       return filter;
     });

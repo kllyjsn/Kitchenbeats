@@ -73,7 +73,7 @@ export class DJDeck {
     if (dur === 0) return 0;
     if (this._looping && this._loopEnd > this._loopStart) {
       const loopLen = this._loopEnd - this._loopStart;
-      const pos = this._loopStart + ((this.pauseOffset - this._loopStart + elapsed) % loopLen);
+      const pos = this._loopStart + (((this.pauseOffset - this._loopStart + elapsed) % loopLen) + loopLen) % loopLen;
       return pos;
     }
     return Math.min(this.pauseOffset + elapsed, dur);

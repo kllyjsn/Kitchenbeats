@@ -2,9 +2,9 @@ import { useEffect, useCallback, useRef } from 'react';
 import { KEYBOARD_MAP } from '../types';
 
 interface UseKeyboardProps {
-  onTriggerPad: (index: number, velocity: number) => void;
-  onTogglePlay: () => void;
-  onToggleRecord: () => void;
+  onTriggerPad?: (index: number, velocity: number) => void;
+  onTogglePlay?: () => void;
+  onToggleRecord?: () => void;
 }
 
 export function useKeyboard({ onTriggerPad, onTogglePlay, onToggleRecord }: UseKeyboardProps) {
@@ -16,20 +16,20 @@ export function useKeyboard({ onTriggerPad, onTogglePlay, onToggleRecord }: UseK
 
     const key = e.key.toLowerCase();
 
-    if (key in KEYBOARD_MAP) {
+    if (key in KEYBOARD_MAP && onTriggerPad) {
       e.preventDefault();
       heldKeys.current.add(key);
       onTriggerPad(KEYBOARD_MAP[key], 0.8);
       return;
     }
 
-    if (key === ' ') {
+    if (key === ' ' && onTogglePlay) {
       e.preventDefault();
       onTogglePlay();
       return;
     }
 
-    if (key === 'enter') {
+    if (key === 'enter' && onToggleRecord) {
       e.preventDefault();
       onToggleRecord();
     }

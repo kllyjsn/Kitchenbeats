@@ -15,7 +15,7 @@ export class DrumSynth {
   }
 
   private buildNoiseBuffer(): void {
-    const length = Math.ceil(this.ctx.sampleRate * 2);
+    const length = Math.ceil(this.ctx.sampleRate * 3);
     this.noiseBuffer = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
     const data = this.noiseBuffer.getChannelData(0);
     for (let i = 0; i < length; i++) {

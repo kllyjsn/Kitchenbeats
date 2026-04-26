@@ -26,7 +26,8 @@ export class DrumSynth {
   private noise(time: number, duration: number): AudioBufferSourceNode {
     const src = this.ctx.createBufferSource();
     src.buffer = this.noiseBuffer;
-    src.start(time);
+    const maxOffset = Math.max(0, 3 - duration);
+    src.start(time, Math.random() * maxOffset);
     src.stop(time + duration);
     return src;
   }
